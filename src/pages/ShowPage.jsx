@@ -22,7 +22,9 @@ export default function ShowPage() {
   return (
     <div style={{ padding: 20 }}>
       <h2>Uploaded Items</h2>
-      <p><Link to="/add">Add new item →</Link></p>
+      <p>
+        <Link to="/add">Add new item →</Link>
+      </p>
 
       {posts.length === 0 ? (
         <p>No items yet.</p>
@@ -38,19 +40,19 @@ export default function ShowPage() {
                 maxWidth: 300,
               }}
             >
-              <img
-                src={p.image_url}
-                alt={p.id}
-                style={{ width: "100%", borderRadius: 8 }}
-              />
+              {p.image_url ? (
+                <img
+                  src={p.image_url}
+                  alt={p.id}
+                  style={{ width: "100%", borderRadius: 8 }}
+                />
+              ) : (
+                <p>(No Image)</p>
+              )}
               <p>{p.title}</p>
 
-              {(p.size)?
-                <p>Size: {p.size}</p> : <p>Size: same</p>
-              }
-              {(p.color)?
-                <p>Color: {p.color}</p> : <p>Color: same</p>
-              }
+              {p.size ? <p>Size: {p.size}</p> : <p>Size: same</p>}
+              {p.color ? <p>Color: {p.color}</p> : <p>Color: same</p>}
               <p>Quantity: {p.quantity}</p>
               <p>Location: {p.location}</p>
               <p>Edu: {p.name}</p>
