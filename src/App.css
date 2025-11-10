@@ -1,0 +1,69 @@
+/* Make sure the page fills the entire viewport */
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Full-screen centered container */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* vertical center */
+  align-items: center;     /* horizontal center */
+  height: 100vh;           /* full viewport height */
+  width: 100vw;            /* full viewport width */
+  background-color: #f9fafb; /* light gray background */
+}
+
+/* Title styling */
+.app-title {
+  margin-bottom: 2rem;
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #111827; /* dark gray text */
+  text-align: center;
+}
+
+/* Navigation section (button container) */
+.app-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* space between buttons */
+  width: 220px;
+}
+
+/* Shared button look */
+.app-button {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  padding: 14px 18px;
+  border-radius: 10px;
+  font-weight: bold;
+  color: white;
+  font-size: 1rem;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+/* Blue button (Add) */
+.app-button.add {
+  background-color: #2563eb;
+}
+
+.app-button.add:hover {
+  background-color: #1d4ed8;
+  transform: scale(1.03);
+}
+
+/* Green button (View) */
+.app-button.view {
+  background-color: #10b981;
+}
+
+.app-button.view:hover {
+  background-color: #059669;
+  transform: scale(1.03);
+}
