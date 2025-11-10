@@ -17,7 +17,23 @@ export default function ShowPage() {
     }
 
     fetchPosts();
+
+    const channel = supabase
+      .channel("realtime-posts")
+      .on(
+        "postgres_changes",
+        {event:'*', schema:'public', table:'posts'},
+        (payload) => {
+          setPosts((prev) => [payload.new, ...prev]);
+        }
+      ).subscribe();
+    
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
+
+
 
   return (
     <div style={{ padding: 20 }}>
