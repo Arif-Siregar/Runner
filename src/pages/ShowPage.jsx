@@ -33,7 +33,30 @@ export default function ShowPage() {
     };
   }, []);
 
+  async function handleDelete(p){
+    const {error} = await supabase
+      .from("posts")
+      .delete()
+      .eq("id", p.id)
 
+    if (error){
+      console.error("Error deleting item:", error.message);
+      alert("Error deleting item.")
+    }
+
+    if (p.image_path){
+      const {error: storageError} = await supabase.storage
+        .from("uploads")
+        .remove([p.image_path]);
+
+      if (storageError) {
+        console.error("Error deleting image:", storageError.message);
+        alert("Warning: Item deleted but image not removed.");
+      }
+    }
+
+    setPosts((prev) => prev.filter((post) => post.id !== p.id));
+  }
 
   return (
     <div style={{ padding: 20 }}>
@@ -72,6 +95,9 @@ export default function ShowPage() {
               <p>Quantity: {p.quantity}</p>
               <p>Location: {p.location}</p>
               <p>Edu: {p.name}</p>
+              <button onClick={() => handleDelete(p)}>
+                <img src="/icons/trash.png" alt="Delete" className="delete-icon" />
+              </button>
             </div>
           ))}
         </div>

@@ -45,7 +45,8 @@ export default function AddPage() {
         quantity:quantity,
         location:location,
         name:name,
-        image_url: imageUrl }]);
+        image_url: imageUrl,
+        image_path: filePath }]);
 
     if (dbError) {
       setLoading(false);
