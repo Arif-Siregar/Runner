@@ -17,11 +17,12 @@ export default function AddPage() {
     e.preventDefault();
     if (!file && !title) return alert("Please provide at least an item's name or a WWMT tag.");
     if (!location || !name) return alert("Please provide both your location and your name")
-    var imageUrl = "";
+    var imageUrl = null;
+    var filePath = null;
     setLoading(true);
 
     if (file){
-      const filePath = `uploads/${Date.now()}-${file.name}`;
+      filePath = `uploads/${Date.now()}-${file.name}`;
       const { error: uploadError } = await supabase.storage
         .from("uploads")
         .upload(filePath, file);
@@ -47,6 +48,7 @@ export default function AddPage() {
         name:name,
         image_url: imageUrl,
         image_path: filePath }]);
+    
 
     if (dbError) {
       setLoading(false);
