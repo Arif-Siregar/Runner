@@ -22,9 +22,16 @@ export default function ShowPage() {
       .channel("realtime-posts")
       .on(
         "postgres_changes",
-        {event:'*', schema:'public', table:'posts'},
+        {event:'INSERT', schema:'public', table:'posts'},
         (payload) => {
           setPosts((prev) => [payload.new, ...prev]);
+        }
+      )
+      .on(
+        "postgres_changes",
+        {event:'DELETE', schema:'public', table:'posts'},
+        (payload) => {
+          setPosts((prev) => prev.filter((p) => p.id !== payload.old.id));
         }
       ).subscribe();
     

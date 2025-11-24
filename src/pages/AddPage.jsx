@@ -2,21 +2,21 @@ import { useState } from "react";
 import { supabase } from "../supabaseClient";
 import { Link } from "react-router-dom";
 import "./AddPage.css"
+import { useAuth } from "../AuthContext";
 
 export default function AddPage() {
   const [title, setTitle] = useState("");
   const [size, setSize] = useState("");
   const [color, setColor] = useState("");
   const [quantity, setQuantity] = useState(1);
-  const [location, setLocation] = useState("");
-  const [name, setName] = useState("");
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
+  const {user} = useAuth();
 
   async function handleSubmit(e) {
     e.preventDefault();
     if (!file && !title) return alert("Please provide at least an item's name or a WWMT tag.");
-    if (!location || !name) return alert("Please provide both your location and your name")
+    if (user.role === "BOH") return alert("Please log in as FOH to add item");
     var imageUrl = null;
     var filePath = null;
     setLoading(true);
@@ -44,8 +44,8 @@ export default function AddPage() {
         size:size,
         color:color,
         quantity:quantity,
-        location:location,
-        name:name,
+        location:user.location,
+        name:user.name,
         image_url: imageUrl,
         image_path: filePath }]);
     
@@ -60,8 +60,6 @@ export default function AddPage() {
     setSize("");
     setColor("");
     setQuantity(1);
-    setLocation("");
-    setName("");
     setFile(null);
     setLoading(false);
   }
@@ -127,24 +125,6 @@ export default function AddPage() {
             placeholder="e.g. 3"
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
-            className="form-input"
-          />
-
-          <label className="form-label">Location</label>
-          <input
-            type="text"
-            placeholder="e.g. Z1, W Pant Wall"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            className="form-input"
-          />
-
-          <label className="form-label">Your Name</label>
-          <input
-            type="text"
-            placeholder="Edu Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
             className="form-input"
           />
         </section>
