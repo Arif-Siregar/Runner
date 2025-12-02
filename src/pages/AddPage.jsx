@@ -47,7 +47,8 @@ export default function AddPage() {
         location:user.location,
         name:user.name,
         image_url: imageUrl,
-        image_path: filePath }]);
+        image_path: filePath
+      }]);
     
 
     if (dbError) {
@@ -84,7 +85,7 @@ export default function AddPage() {
           />
 
           <div className="divider">or</div>
-
+          
           <label className="form-label">Provide Item's Name</label>
           <input
             type="text"
@@ -138,7 +139,7 @@ export default function AddPage() {
         </button>
       </form>
 
-      <p><Link to="/show">View all items →</Link></p>
+      <p><Link to="/showBOH">View all items →</Link></p>
     </div>
   );
 }

@@ -4,7 +4,8 @@ import { useAuth } from "./AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import LoginPage from "./pages/LoginPage";
 import AddPage from "./pages/AddPage";
-import ShowPage from "./pages/ShowPage";
+import ShowPageBOH from "./pages/ShowPageBOH";
+import ShowPageFOH from "./pages/ShowPageFOH";
 
 export default function AppRoutes() {
   const user = useAuth(); // NOW it works correctly
@@ -26,10 +27,19 @@ export default function AppRoutes() {
       />
 
       <Route
-        path="/show"
+        path="/showBOH"
         element={
           <ProtectedRoute>
-            <ShowPage />
+            <ShowPageBOH />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/showFOH"
+        element={
+          <ProtectedRoute>
+            <ShowPageFOH />
           </ProtectedRoute>
         }
       />
@@ -42,7 +52,7 @@ export default function AppRoutes() {
             user.role === "FOH" ? (
               <Navigate to="/add" replace />
             ) : (
-              <Navigate to="/show" replace />
+              <Navigate to="/showBOH" replace />
             )
           ) : (
             <Navigate to="/login" replace />

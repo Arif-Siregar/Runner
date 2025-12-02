@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 import { Link } from "react-router-dom";
 
-export default function ShowPage() {
+export default function ShowPageFOH() {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {

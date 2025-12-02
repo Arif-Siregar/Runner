@@ -20,8 +20,6 @@ export default function Navbar() {
       </div>
 
       <div className="nav-right">
-        <Link to="/add">Add Item</Link>
-        <Link to="/show">View Items</Link>
         <button onClick={handleLogout} className="logout-btn">Logout</button>
       </div>
     </header>

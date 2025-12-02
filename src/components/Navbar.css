@@ -7,6 +7,7 @@
   justify-content: space-between;
   align-items: center;
   box-sizing: border-box;
+  gap: 20px;
 }
 
 .nav-left {
@@ -14,7 +15,7 @@
 }
 
 .nav-right a {
-  margin-right: 15px;
+  margin-right: 20px;
   color: #ddd;
   text-decoration: none;
 }
