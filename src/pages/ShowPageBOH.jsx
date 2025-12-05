@@ -7,6 +7,7 @@ import { useAuth } from "../AuthContext";
 export default function ShowPageBOH() {
   const [posts, setPosts] = useState([]);
   const {user} = useAuth();
+  const newPostSound = new Audio("/sounds/ding.mp3");
 
   useEffect(() => {
     async function fetchPosts() {
@@ -28,6 +29,7 @@ export default function ShowPageBOH() {
         {event:'INSERT', schema:'public', table:'posts'},
         (payload) => {
           setPosts((prev) => [payload.new, ...prev]);
+          newPostSound.play().catch(() => {console.warn("User hasn't interacted yet. Sound blocked.");});
         }
       )
       .on(
