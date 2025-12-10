@@ -1,0 +1,63 @@
+/* Container */
+.comment-section {
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: #f7f7f7;
+  border-radius: 12px;
+  border: 1px solid #e2e2e2;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Label */
+.comment-section .form-label {
+  font-size: 0.9rem;
+  color: #444;
+  font-weight: 600;
+}
+
+/* Input box */
+.comment-section .form-input {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.comment-section .form-input:focus {
+  border-color: #007aff;
+}
+
+/* Submit button */
+.comment-section .submit-btn {
+  padding: 8px 12px;
+  background-color: #007aff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+}
+
+.comment-section .submit-btn:hover {
+  opacity: 0.9;
+}
+
+.comment-section .submit-btn:active {
+  transform: scale(0.97);
+}
+
+.comment-section .submit-btn:disabled {
+  background-color: #a5cafe;
+  cursor: not-allowed;
+}
+
+/* Extra spacing from other card items */
+.comment-section {
+  margin-bottom: 12px;
+}

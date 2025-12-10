@@ -3,6 +3,7 @@ import { supabase } from "../supabaseClient";
 import { Link } from "react-router-dom";
 import "./ShowPageBOH.css"
 import { useAuth } from "../AuthContext";
+import Comment from "../components/Comment"
 
 export default function ShowPageBOH() {
   const [posts, setPosts] = useState([]);
@@ -75,8 +76,6 @@ export default function ShowPageBOH() {
         alert("Warning: Item deleted but image not removed.");
       }
     }
-
-    setPosts((prev) => prev.filter((post) => post.id !== p.id));
   }
 
   async function handleInProgress(p){
@@ -89,10 +88,6 @@ export default function ShowPageBOH() {
       console.error("Error updating item:", error.message);
       alert("Error updating item.")
     }
-
-    setPosts((prev) => prev.map((post) => post.id === p.id
-        ? { ...post, in_progress: user.name }
-        : post))
 
     alert("You got this!");
   }
@@ -130,6 +125,12 @@ export default function ShowPageBOH() {
               <p>Quantity: {p.quantity}</p>
               <p>Location: {p.location}</p>
               <p>Edu: {p.name}</p>
+              {p.comment ? (
+                <p>Comment: {p.comment}</p>
+              ): (
+                <Comment id={p.id} />
+              )}
+
               <div className="post-actions">
                 <button
                   className={p.in_progress? "btn-progress-disabled": "btn-progress"}
