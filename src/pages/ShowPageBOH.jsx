@@ -56,16 +56,6 @@ export default function ShowPageBOH() {
   }, []);
 
   async function handleDelete(p){
-    const {error} = await supabase
-      .from("posts")
-      .delete()
-      .eq("id", p.id)
-
-    if (error){
-      console.error("Error deleting item:", error.message);
-      alert("Error deleting item.")
-    }
-
     if (p.image_path){
       const {error: storageError} = await supabase.storage
         .from("uploads")
@@ -75,6 +65,16 @@ export default function ShowPageBOH() {
         console.error("Error deleting image:", storageError.message);
         alert("Warning: Item deleted but image not removed.");
       }
+    }
+
+    const {error} = await supabase
+      .from("posts")
+      .delete()
+      .eq("id", p.id)
+
+    if (error){
+      console.error("Error deleting item:", error.message);
+      alert("Error deleting item.")
     }
   }
 

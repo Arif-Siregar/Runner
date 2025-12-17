@@ -12,6 +12,7 @@ export default function AddPage() {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const {user} = useAuth();
+  const [location, setLocation] = useState(user.location);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -44,7 +45,7 @@ export default function AddPage() {
         size:size,
         color:color,
         quantity:quantity,
-        location:user.location,
+        location:location,
         name:user.name,
         image_url: imageUrl,
         image_path: filePath
@@ -128,6 +129,22 @@ export default function AddPage() {
             onChange={(e) => setQuantity(e.target.value)}
             className="form-input"
           />
+
+          <label className="form-label">Location</label>
+          <select
+            value={location} 
+            onChange={(e) => setLocation(e.target.value)}
+            className="form-input"
+          >
+            <option value="Cash">Cash</option>
+            <option value="Fits">Fits</option>
+            <option value="M Pant">M Pant</option>
+            <option value="W Pant">W Pant</option>
+            <option value="Zone 1">Z1</option>
+            <option value="Zone 2">Z2</option>
+            <option value="Zone 3">Z3</option>
+          </select>
+          <p className="input-hint">Change location if you are not at {user.location}</p>
         </section>
 
         <button

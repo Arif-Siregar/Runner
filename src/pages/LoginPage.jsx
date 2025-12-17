@@ -51,6 +51,8 @@ export default function LoginPage() {
         {(role === "FOH" ) &&(              
           <select value={location} onChange={(e) => setLocation(e.target.value)}>
             <option value="">Select Location</option>
+            <option value="Cash">Cash</option>
+            <option value="Fits">Fits</option>
             <option value="M Pant">M Pant</option>
             <option value="W Pant">W Pant</option>
             <option value="Zone 1">Z1</option>
