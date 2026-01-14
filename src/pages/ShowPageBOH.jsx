@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import "./ShowPageBOH.css"
 import { useAuth } from "../AuthContext";
 import Comment from "../components/Comment"
-import sortByCreatedAt from "../components/SortByCreatedAt";
+import sortByCreatedAt from "../components/sortByCreatedAt";
 
 export default function ShowPageBOH() {
   const [posts, setPosts] = useState([]);
