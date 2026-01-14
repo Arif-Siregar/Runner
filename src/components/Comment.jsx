@@ -16,7 +16,10 @@ export default function Comment({id}){
 
         const {error} = await supabase
             .from("posts")
-            .update({comment: comment})
+            .update({
+                comment: comment,
+                created_at: new Date().toISOString(),
+            })
             .eq("id", id);
         
         if (error){

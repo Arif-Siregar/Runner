@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import "./ShowPageBOH.css"
 import { useAuth } from "../AuthContext";
 import Comment from "../components/Comment"
+import sortByCreatedAt from "../components/SortByCreatedAt";
 
 export default function ShowPageBOH() {
   const [posts, setPosts] = useState([]);
@@ -29,7 +30,7 @@ export default function ShowPageBOH() {
         "postgres_changes",
         {event:'INSERT', schema:'public', table:'posts'},
         (payload) => {
-          setPosts((prev) => [payload.new, ...prev]);
+          setPosts((prev) => sortByCreatedAt([payload.new, ...prev]));
           newPostSound.play().catch(() => {console.warn("User hasn't interacted yet. Sound blocked.");});
         }
       )
@@ -38,8 +39,9 @@ export default function ShowPageBOH() {
         { event: "UPDATE", schema: "public", table: "posts" },
         (payload) => {
           setPosts((prev) =>
-            prev.map((p) => (p.id === payload.new.id ? payload.new : p))
+            sortByCreatedAt(prev.map((p) => (p.id === payload.new.id ? payload.new : p)))
           );
+          // newPostSound.play().catch(() => {console.warn("User hasn't interacted yet. Sound blocked.");});
         }
       )
       .on(
