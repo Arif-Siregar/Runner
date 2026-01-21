@@ -3,6 +3,7 @@ import { supabase } from "../supabaseClient";
 import { Link } from "react-router-dom";
 import "./AddPage.css"
 import { useAuth } from "../AuthContext";
+import ShowPageBOH from "./ShowPageBOH";
 
 export default function AddPage() {
   const [title, setTitle] = useState("");
@@ -48,7 +49,8 @@ export default function AddPage() {
         location:location,
         name:user.name,
         image_url: imageUrl,
-        image_path: filePath
+        image_path: filePath,
+        repost:false,
       }]);
     
 
@@ -68,95 +70,100 @@ export default function AddPage() {
 
   return (
     <div style={{ padding: 20 }}>
-      <form onSubmit={handleSubmit} className="form">
-        {/* Section 1: Image or Item Name */}
-        <section className="form-section">
-          <h3 className="section-title">1️⃣ WWMT Tag or Item Name</h3>
-          <p className="section-hint">
-            <strong>Take a picture of WWMT tag</strong> or <strong>search for item's name</strong>.
-          </p>
+      <div>
+        <form onSubmit={handleSubmit} className="form">
+          {/* Section 1: Image or Item Name */}
+          <section className="form-section">
+            <h3 className="section-title">1️⃣ WWMT Tag or Item Name</h3>
+            <p className="section-hint">
+              <strong>Take a picture of WWMT tag</strong> or <strong>search for item's name</strong>.
+            </p>
 
-          <label className="form-label">WWMT tag picture</label>
-          <input
-            type="file"
-            accept="image/*"
-            capture="environment"
-            onChange={(e) => setFile(e.target.files[0])}
-            className="form-input"
-          />
+            <label className="form-label">WWMT tag picture</label>
+            <input
+              type="file"
+              accept="image/*"
+              capture="environment"
+              onChange={(e) => setFile(e.target.files[0])}
+              className="form-input"
+            />
 
-          <div className="divider">or</div>
-          
-          <label className="form-label">Provide Item's Name</label>
-          <input
-            type="text"
-            placeholder="e.g. Define Jacket Nulu"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="form-input"
-          />
-        </section>
+            <div className="divider">or</div>
+            
+            <label className="form-label">Provide Item's Name</label>
+            <input
+              type="text"
+              placeholder="e.g. Define Jacket Nulu"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="form-input"
+            />
+          </section>
 
-        {/* Section 2: Details */}
-        <section className="form-section">
-          <h3 className="section-title">2️⃣ Item Details</h3>
+          {/* Section 2: Details */}
+          <section className="form-section">
+            <h3 className="section-title">2️⃣ Item Details</h3>
 
-          <label className="form-label">Size</label>
-          <input
-            type="text"
-            placeholder="e.g. M"
-            value={size}
-            onChange={(e) => setSize(e.target.value)}
-            className="form-input"
-          />
-          <p className="input-hint">Leave blank if same as WWMT tag</p>
+            <label className="form-label">Size</label>
+            <input
+              type="text"
+              placeholder="e.g. M"
+              value={size}
+              onChange={(e) => setSize(e.target.value)}
+              className="form-input"
+            />
+            <p className="input-hint">Leave blank if same as WWMT tag</p>
 
-          <label className="form-label">Color</label>
-          <input
-            type="text"
-            placeholder="e.g. BLK"
-            value={color}
-            onChange={(e) => setColor(e.target.value)}
-            className="form-input"
-          />
-          <p className="input-hint">Leave blank if same as WWMT tag</p>
+            <label className="form-label">Color</label>
+            <input
+              type="text"
+              placeholder="e.g. BLK"
+              value={color}
+              onChange={(e) => setColor(e.target.value)}
+              className="form-input"
+            />
+            <p className="input-hint">Leave blank if same as WWMT tag</p>
 
-          <label className="form-label">Quantity</label>
-          <input
-            type="text"
-            placeholder="e.g. 3"
-            value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
-            className="form-input"
-          />
+            <label className="form-label">Quantity</label>
+            <input
+              type="text"
+              placeholder="e.g. 3"
+              value={quantity}
+              onChange={(e) => setQuantity(e.target.value)}
+              className="form-input"
+            />
 
-          <label className="form-label">Location</label>
-          <select
-            value={location} 
-            onChange={(e) => setLocation(e.target.value)}
-            className="form-input"
+            <label className="form-label">Location</label>
+            <select
+              value={location} 
+              onChange={(e) => setLocation(e.target.value)}
+              className="form-input"
+            >
+              <option value="Cash">Cash</option>
+              <option value="Fits">Fits</option>
+              <option value="M Pant">M Pant</option>
+              <option value="W Pant">W Pant</option>
+              <option value="Zone 1">Z1</option>
+              <option value="Zone 2">Z2</option>
+              <option value="Zone 3">Z3</option>
+            </select>
+            <p className="input-hint">Change location if you are not at {user.location}</p>
+          </section>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="submit-btn"
           >
-            <option value="Cash">Cash</option>
-            <option value="Fits">Fits</option>
-            <option value="M Pant">M Pant</option>
-            <option value="W Pant">W Pant</option>
-            <option value="Zone 1">Z1</option>
-            <option value="Zone 2">Z2</option>
-            <option value="Zone 3">Z3</option>
-          </select>
-          <p className="input-hint">Change location if you are not at {user.location}</p>
-        </section>
+            {loading ? "Uploading..." : "Add Item"}
+          </button>
+        </form>
+      </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="submit-btn"
-        >
-          {loading ? "Uploading..." : "Add Item"}
-        </button>
-      </form>
+      <div>
+        <ShowPageBOH role="FOH"/>
+      </div>
 
-      <p><Link to="/showBOH">View all items →</Link></p>
     </div>
   );
 }

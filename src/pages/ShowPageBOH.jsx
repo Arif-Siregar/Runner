@@ -6,7 +6,7 @@ import { useAuth } from "../AuthContext";
 import Comment from "../components/Comment"
 import sortByCreatedAt from "../components/sortByCreatedAt";
 
-export default function ShowPageBOH() {
+export default function ShowPageBOH({role}) {
   const [posts, setPosts] = useState([]);
   const {user} = useAuth();
   const newPostSound = new Audio("/sounds/ding.mp3");
@@ -58,17 +58,6 @@ export default function ShowPageBOH() {
   }, []);
 
   async function handleDelete(p){
-    if (p.image_path){
-      const {error: storageError} = await supabase.storage
-        .from("uploads")
-        .remove([p.image_path]);
-
-      if (storageError) {
-        console.error("Error deleting image:", storageError.message);
-        alert("Warning: Item deleted but image not removed.");
-      }
-    }
-
     const {error} = await supabase
       .from("posts")
       .delete()
@@ -89,17 +78,31 @@ export default function ShowPageBOH() {
     if (error){
       console.error("Error updating item:", error.message);
       alert("Error updating item.")
+    }else{
+      alert("You got this!");
     }
+  }
 
-    alert("You got this!");
+  async function handleRepost(p){
+    const { error } = await supabase
+      .from("posts")
+      .update({
+        created_at: new Date().toISOString(),
+        repost: true,
+      })
+      .eq("id", p.id);
+
+    if (error) {
+      console.error("Error updating item:", error.message);
+      alert("Error updating item.")
+    } else {
+      alert("The request has been reposted.")
+    }
   }
 
   return (
     <div className="showpage-container">
       <h2>Uploaded Items</h2>
-      <p>
-        <Link to="/add">Add new item →</Link>
-      </p>
 
       {posts.length === 0 ? (
         <p>No items yet.</p>
@@ -108,7 +111,7 @@ export default function ShowPageBOH() {
           {posts.map((p) => (
             <div
               key={p.id}
-              className="post-card"
+              className={`post-card ${(p.repost && role==="BOH")? "repost" : ""}`}
             >
               {p.in_progress ? <p>{p.in_progress} is working on it...</p>: null}
               {p.image_url ? (
@@ -127,27 +130,35 @@ export default function ShowPageBOH() {
               <p>Quantity: {p.quantity}</p>
               <p>Location: {p.location}</p>
               <p>Edu: {p.name}</p>
+              
               {p.comment ? (
-                <p>Comment: {p.comment}</p>
+                <p style={{background:`${role==="FOH" ? "green" : ""}`}}>Comment: {p.comment}</p>
               ): (
-                <Comment id={p.id} />
+                (role === "BOH" && <Comment id={p.id} />)
               )}
 
               <div className="post-actions">
-                <button
+                {(role === "FOH") && (<button
+                  className="repost-btn"
+                  onClick={() => handleRepost(p)}
+                >
+                  Repost
+                </button>)}
+
+                {(role === "BOH") && (<button
                   className={p.in_progress? "btn-progress-disabled": "btn-progress"}
                   disabled={p.in_progress}
                   onClick={() => handleInProgress(p)}
                 >
                   {p.in_progress ? "In Progress" : "Got it!"}
-                </button>
+                </button>)}
 
-                <button
+                {(role === "FOH") && (<button
                   className="delete-btn" 
                   onClick={() => handleDelete(p)}
                 >
-                  <img src="/icons/trash.png" alt="Delete" className="delete-icon" />
-                </button>
+                  Completed
+                </button>)}
 
               </div>
             </div>
