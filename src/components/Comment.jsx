@@ -18,7 +18,7 @@ export default function Comment({id}){
             .from("posts")
             .update({
                 comment: comment,
-                created_at: new Date().toISOString(),
+                created_at_BOH: new Date().toISOString(),
             })
             .eq("id", id);
         

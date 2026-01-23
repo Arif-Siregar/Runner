@@ -13,13 +13,26 @@ export default function ShowPageBOH({role}) {
 
   useEffect(() => {
     async function fetchPosts() {
-      const { data, error } = await supabase
-        .from("posts")
-        .select("*")
-        .order("created_at", { ascending: false });
+      let tempData = null;
+      let tempError = null;
+      if (role === "BOH"){
+        const { data, error } = await supabase
+          .from("posts")
+          .select("*")
+          .order("created_at_boh", { ascending: false });
+          tempData = data
+          tempError = error
+      } else {
+        const { data, error } = await supabase
+          .from("posts")
+          .select("*")
+          .order("created_at_foh", { ascending: false });
+          tempData = data
+          tempError = error
+      }
 
-      if (error) console.error(error);
-      else setPosts(data);
+      if (tempError) console.error(tempError);
+      else setPosts(tempData);
     }
 
     fetchPosts();
@@ -31,7 +44,9 @@ export default function ShowPageBOH({role}) {
         {event:'INSERT', schema:'public', table:'posts'},
         (payload) => {
           setPosts((prev) => sortByCreatedAt([payload.new, ...prev]));
-          newPostSound.play().catch(() => {console.warn("User hasn't interacted yet. Sound blocked.");});
+          if (role === "BOH"){
+            newPostSound.play().catch(() => {console.warn("User hasn't interacted yet. Sound blocked.");});
+          }
         }
       )
       .on(
@@ -87,7 +102,7 @@ export default function ShowPageBOH({role}) {
     const { error } = await supabase
       .from("posts")
       .update({
-        created_at: new Date().toISOString(),
+        created_at_boh: new Date().toISOString(),
         repost: true,
       })
       .eq("id", p.id);
