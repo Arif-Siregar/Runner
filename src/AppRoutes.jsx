@@ -7,7 +7,7 @@ import AddPage from "./pages/AddPage";
 import ShowPageBOH from "./pages/ShowPageBOH";
 
 export default function AppRoutes() {
-  const user = useAuth(); // NOW it works correctly
+  const {user} = useAuth(); // NOW it works correctly
 
   return (
     <Routes>
@@ -29,7 +29,7 @@ export default function AppRoutes() {
         path="/showBOH"
         element={
           <ProtectedRoute>
-            <ShowPageBOH role="BOH"/>
+            <ShowPageBOH />
           </ProtectedRoute>
         }
       />

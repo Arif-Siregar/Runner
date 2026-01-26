@@ -6,16 +6,16 @@ import { useAuth } from "../AuthContext";
 import Comment from "../components/Comment"
 import sortByCreatedAt from "../components/sortByCreatedAt";
 
-export default function ShowPageBOH({role}) {
+export default function ShowPageBOH() {
   const [posts, setPosts] = useState([]);
   const {user} = useAuth();
-  const newPostSound = new Audio("/sounds/ding.mp3");
+  const updateSound = new Audio("/sounds/ding.mp3");
 
   useEffect(() => {
     async function fetchPosts() {
       let tempData = null;
       let tempError = null;
-      if (role === "BOH"){
+      if (user.role === "BOH"){
         const { data, error } = await supabase
           .from("posts")
           .select("*")
@@ -43,9 +43,9 @@ export default function ShowPageBOH({role}) {
         "postgres_changes",
         {event:'INSERT', schema:'public', table:'posts'},
         (payload) => {
-          setPosts((prev) => sortByCreatedAt([payload.new, ...prev]));
-          if (role === "BOH"){
-            newPostSound.play().catch(() => {console.warn("User hasn't interacted yet. Sound blocked.");});
+          setPosts((prev) => sortByCreatedAt([payload.new, ...prev], user.role));
+          if (user.role === "BOH"){
+            updateSound.play().catch(() => {console.warn("User hasn't interacted yet. Sound blocked.");});
           }
         }
       )
@@ -54,9 +54,23 @@ export default function ShowPageBOH({role}) {
         { event: "UPDATE", schema: "public", table: "posts" },
         (payload) => {
           setPosts((prev) =>
-            sortByCreatedAt(prev.map((p) => (p.id === payload.new.id ? payload.new : p)))
+            sortByCreatedAt(prev.map((p) => (p.id === payload.new.id ? payload.new : p)), user.role)
           );
-          // newPostSound.play().catch(() => {console.warn("User hasn't interacted yet. Sound blocked.");});
+          // if (payload.new.in_progress !== payload.old.in_progress){
+          //   updateSound.play().catch(() => {console.warn("User hasn't interacted yet. Sound blocked.");});
+          // } 
+
+          // if (user.role === "BOH"){
+          //   if (payload.new.repost !== payload.old.repost){
+          //     updateSound.play().catch(() => {console.warn("User hasn't interacted yet. Sound blocked.");});
+          //   }
+          // }
+          // if (user.role === "FOH") {
+          //   if (payload.new.comment !== payload.old.comment){
+          //     updateSound.play().catch(() => {console.warn("User hasn't interacted yet. Sound blocked.");});
+          //   }
+          // }
+
         }
       )
       .on(
@@ -73,6 +87,7 @@ export default function ShowPageBOH({role}) {
   }, []);
 
   async function handleDelete(p){
+    console.log("delete")
     const {error} = await supabase
       .from("posts")
       .delete()
@@ -103,6 +118,7 @@ export default function ShowPageBOH({role}) {
       .from("posts")
       .update({
         created_at_boh: new Date().toISOString(),
+        created_at_foh: new Date().toISOString(),
         repost: true,
       })
       .eq("id", p.id);
@@ -126,7 +142,7 @@ export default function ShowPageBOH({role}) {
           {posts.map((p) => (
             <div
               key={p.id}
-              className={`post-card ${(p.repost && role==="BOH")? "repost" : ""}`}
+              className={`post-card ${(p.repost && user.role==="BOH")? "repost" : ""}`}
             >
               {p.in_progress ? <p>{p.in_progress} is working on it...</p>: null}
               {p.image_url ? (
@@ -147,20 +163,20 @@ export default function ShowPageBOH({role}) {
               <p>Edu: {p.name}</p>
               
               {p.comment ? (
-                <p style={{background:`${role==="FOH" ? "green" : ""}`}}>Comment: {p.comment}</p>
+                <p style={{background:`${user.role==="FOH" ? "green" : ""}`}}>Comment: {p.comment}</p>
               ): (
-                (role === "BOH" && <Comment id={p.id} />)
+                (user.role === "BOH" && <Comment id={p.id} />)
               )}
 
               <div className="post-actions">
-                {(role === "FOH") && (<button
+                {(user.role === "FOH") && (<button
                   className="repost-btn"
                   onClick={() => handleRepost(p)}
                 >
                   Repost
                 </button>)}
 
-                {(role === "BOH") && (<button
+                {(user.role === "BOH") && (<button
                   className={p.in_progress? "btn-progress-disabled": "btn-progress"}
                   disabled={p.in_progress}
                   onClick={() => handleInProgress(p)}
@@ -168,7 +184,7 @@ export default function ShowPageBOH({role}) {
                   {p.in_progress ? "In Progress" : "Got it!"}
                 </button>)}
 
-                {(role === "FOH") && (<button
+                {(user.role === "FOH") && (<button
                   className="delete-btn" 
                   onClick={() => handleDelete(p)}
                 >

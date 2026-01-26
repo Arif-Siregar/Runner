@@ -11,14 +11,14 @@ export default function Comment({id}){
     async function handleSubmit(e){
         e.preventDefault();
         if (!comment) return alert("Please add some comments!");
-        if (user.role == "FOH") return alert("Please log in as BOH to comment.");
+        if (user.role === "FOH") return alert("Please log in as BOH to comment.");
         setLoading(true);
 
         const {error} = await supabase
             .from("posts")
             .update({
                 comment: comment,
-                created_at_BOH: new Date().toISOString(),
+                created_at_foh: new Date().toISOString(),
             })
             .eq("id", id);
         

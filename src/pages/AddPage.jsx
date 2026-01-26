@@ -161,7 +161,7 @@ export default function AddPage() {
       </div>
 
       <div>
-        <ShowPageBOH role="FOH"/>
+        <ShowPageBOH />
       </div>
 
     </div>
