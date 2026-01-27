@@ -38,7 +38,7 @@ export default function ShowPageBOH() {
     fetchPosts();
 
     function updatePost(old_p, new_p){
-      if (new_p.in_progress !== old_p.in_progress){
+      if ((new_p.in_progress !== old_p.in_progress) && (new_p.in_progress !== user.name)){
         updateSound.play().catch(() => {console.warn("User hasn't interacted yet. Sound blocked.");});
       } 
 
@@ -105,7 +105,10 @@ export default function ShowPageBOH() {
   async function handleInProgress(p){
     const { error } = await supabase
       .from("posts")
-      .update({ in_progress: user.name })
+      .update({ in_progress: user.name,
+                created_at_boh: new Date().toISOString(),
+                created_at_foh: new Date().toISOString(),
+       })
       .eq("id", p.id);
 
     if (error){
