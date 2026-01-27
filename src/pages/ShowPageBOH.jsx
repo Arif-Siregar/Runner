@@ -37,6 +37,24 @@ export default function ShowPageBOH() {
 
     fetchPosts();
 
+    function updatePost(old_p, new_p){
+      if (new_p.in_progress !== old_p.in_progress){
+        updateSound.play().catch(() => {console.warn("User hasn't interacted yet. Sound blocked.");});
+      } 
+
+      if (user.role === "BOH"){
+        if (new_p.repost !== old_p.repost){
+          updateSound.play().catch(() => {console.warn("User hasn't interacted yet. Sound blocked.");});
+        }
+      }
+      if (user.role === "FOH") {
+        if (new_p.comment !== old_p.comment){
+          updateSound.play().catch(() => {console.warn("User hasn't interacted yet. Sound blocked.");});
+        }
+      }
+      return new_p
+    }
+
     const channel = supabase
       .channel("realtime-posts")
       .on(
@@ -54,23 +72,8 @@ export default function ShowPageBOH() {
         { event: "UPDATE", schema: "public", table: "posts" },
         (payload) => {
           setPosts((prev) =>
-            sortByCreatedAt(prev.map((p) => (p.id === payload.new.id ? payload.new : p)), user.role)
+            sortByCreatedAt(prev.map((p) => (p.id === payload.new.id ? (updatePost(p, payload.new)) : p)), user.role)
           );
-          // if (payload.new.in_progress !== payload.old.in_progress){
-          //   updateSound.play().catch(() => {console.warn("User hasn't interacted yet. Sound blocked.");});
-          // } 
-
-          // if (user.role === "BOH"){
-          //   if (payload.new.repost !== payload.old.repost){
-          //     updateSound.play().catch(() => {console.warn("User hasn't interacted yet. Sound blocked.");});
-          //   }
-          // }
-          // if (user.role === "FOH") {
-          //   if (payload.new.comment !== payload.old.comment){
-          //     updateSound.play().catch(() => {console.warn("User hasn't interacted yet. Sound blocked.");});
-          //   }
-          // }
-
         }
       )
       .on(
