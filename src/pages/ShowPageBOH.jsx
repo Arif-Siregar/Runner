@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
-import Firebase from "../components/firebase";
+import Firebase from "../components/Firebase";
 import "./ShowPageBOH.css"
 import { useAuth } from "../AuthContext";
 import Comment from "../components/Comment"
