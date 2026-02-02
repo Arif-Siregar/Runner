@@ -1,5 +1,8 @@
 import { initializeApp } from "firebase/app";
 import { getMessaging, getToken, isSupported } from "firebase/messaging";
+import { supabase } from "../supabaseClient";
+import { useEffect, useState } from "react";
+import "./Firebase.css";
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -11,7 +14,13 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig)
 
 export default function Firebase(){
-    const messaging = getMessaging(app)
+    const [loading, setLoading] = useState(false);
+    const [supported, setSupported] = useState(false);
+
+    useEffect(() => {
+        isSupported().then(setSupported);
+    }, []);
+
     async function registerServiceWorker() {
         if (!("serviceWorker" in navigator)) {
             throw new Error("Service workers not supported");
@@ -23,10 +32,7 @@ export default function Firebase(){
 
 
     async function getPushToken() { 
-        const supported = await isSupported();
-        if (!supported){
-            throw new Error("Firebase messaging not supported in this browser");
-        }
+        const messaging = getMessaging(app);
         const swRegistration = await registerServiceWorker();
         
         const token = await getToken(messaging, {
@@ -45,24 +51,40 @@ export default function Firebase(){
             }
 
             if (Notification.permission !== "granted"){
+                setLoading(true);
                 const permission = await Notification.requestPermission();
-                if (permission !== "granted") {throw new Error("Notification permission denied")};
+                if (permission !== "granted") {
+                    setLoading(false);
+                    throw new Error("Notification permission denied");
+                }
                 
                 const token = await getPushToken();
-                console.log(token);
+                const { error: dbError } = await supabase
+                    .from("tokens")
+                    .insert([{token: token}])
+                
+                if (dbError) {
+                    setLoading(false);
+                    return alert("Error uploading token: " + dbError.message);
+                }
+                setLoading(false);
+
             }
 
         } catch (err) {
+            setLoading(false);
             console.error("Push setup failed:", err);
         }
 
     }
-
+    if (!supported) return null;
     return (
         <button
+            disabled={loading}
+            className="notification-btn"
             onClick={requestNotificationPermission}
         >
-            Accept notification
+            {loading? "Loading..." : "Accept notification"}
         </button>
     )
 }

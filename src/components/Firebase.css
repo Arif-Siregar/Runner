@@ -1,0 +1,23 @@
+.notification-btn {
+  padding: 12px 18px;
+  background-color: #007aff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+}
+
+.notification-btn:hover {
+  opacity: 0.9;
+}
+
+.notification-btn:active {
+  transform: scale(0.97);
+}
+
+.notification-btn:disabled {
+  background-color: #a5cafe;
+  cursor: not-allowed;
+}
