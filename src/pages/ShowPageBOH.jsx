@@ -140,7 +140,7 @@ export default function ShowPageBOH() {
   return (
     <div className="showpage-container">
       <h2>Uploaded Items</h2>
-      <Firebase />
+
       {posts.length === 0 ? (
         <p>No items yet.</p>
       ) : (
