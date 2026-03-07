@@ -7,7 +7,7 @@ import AddPage from "./pages/AddPage";
 import ShowPageBOH from "./pages/ShowPageBOH";
 
 export default function AppRoutes() {
-  const {user} = useAuth(); // NOW it works correctly
+  const {user} = useAuth(); 
 
   return (
     <Routes>
