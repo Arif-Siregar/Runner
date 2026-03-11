@@ -59,12 +59,14 @@ export default function AddPage() {
       return alert("Error saving post: " + dbError.message);
     }
 
-    // await supabase.functions.invoke("send-new-post-push", {
+    // const notification_result = await supabase.functions.invoke("send-new-post-push", {
     //   body: {
     //     title: "New item requested",
     //     body: "Find something",
     //   },
     // });
+
+    // console.log(notification_result);
 
     alert("Item added!");
     setTitle("");
