@@ -16,7 +16,7 @@ export default function LoginPage() {
 
     login(name, role, location);
 
-    if (role == "FOH"){
+    if (role === "FOH"){
       navigate("/add");
     } else {
       navigate("/show")
