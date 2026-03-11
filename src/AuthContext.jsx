@@ -14,7 +14,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   function login(name, role, location) {
-    if (role === "FOH"){
+    if (role === "FOH" && !location){
       return alert("Please enter your location.")
     }
     const userData = { name, role, location };
