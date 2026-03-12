@@ -10,6 +10,7 @@ export default function ShowPageBOH() {
   const [posts, setPosts] = useState([]);
   const {user} = useAuth();
   const updateSound = new Audio("/sounds/ding.mp3");
+  const gotItSound = new Audio("/sounds/check.mp3");
 
   useEffect(() => {
     async function fetchPosts() {
@@ -39,7 +40,7 @@ export default function ShowPageBOH() {
 
     function updatePost(old_p, new_p){
       if ((new_p.in_progress !== old_p.in_progress) && (new_p.in_progress !== user.name)){
-        // updateSound.play().catch(() => {console.warn("User hasn't interacted yet. Sound blocked.");});
+        gotItSound.play().catch(() => {console.warn("User hasn't interacted yet. Sound blocked.");});
       } 
 
       if (user.role === "BOH"){
