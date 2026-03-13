@@ -190,12 +190,12 @@ export default function ShowPageBOH() {
                   {p.in_progress ? "In Progress" : "Got it!"}
                 </button>)}
 
-                {(user.role === "FOH") && (<button
+                <button
                   className="delete-btn" 
                   onClick={() => handleDelete(p)}
                 >
                   Completed
-                </button>)}
+                </button>
 
               </div>
             </div>

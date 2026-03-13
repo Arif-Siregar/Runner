@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import "./AddPage.css"
 import { useAuth } from "../AuthContext";
 import ShowPageBOH from "./ShowPageBOH";
+import compressImage from "../components/compressImage";
 
 export default function AddPage() {
   const [title, setTitle] = useState("");
@@ -24,10 +25,11 @@ export default function AddPage() {
     setLoading(true);
 
     if (file){
-      filePath = `uploads/${Date.now()}-${file.name}`;
+      compressedFile = file;
+      filePath = `uploads/${Date.now()}-${compressedfile.name}`;
       const { error: uploadError } = await supabase.storage
         .from("uploads")
-        .upload(filePath, file);
+        .upload(filePath, compressedfile);
 
       if (uploadError) {
         setLoading(false);
