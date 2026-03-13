@@ -24,11 +24,10 @@ export default function AddPage() {
     setLoading(true);
 
     if (file){
-      compressedFile = file;
-      filePath = `uploads/${Date.now()}-${compressedFile.name}`;
+      filePath = `uploads/${Date.now()}-${file.name}`;
       const { error: uploadError } = await supabase.storage
         .from("uploads")
-        .upload(filePath, compressedFile);
+        .upload(filePath, file);
 
       if (uploadError) {
         setLoading(false);
