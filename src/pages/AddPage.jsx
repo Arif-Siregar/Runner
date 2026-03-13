@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import "./AddPage.css"
 import { useAuth } from "../AuthContext";
 import ShowPageBOH from "./ShowPageBOH";
-import compressImage from "../components/compressImage";
 
 export default function AddPage() {
   const [title, setTitle] = useState("");
