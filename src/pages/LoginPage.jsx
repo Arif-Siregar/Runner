@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../AuthContext";
 import { useNavigate } from "react-router-dom";
+import "./LoginPage.css";
 
 export default function LoginPage() {
   const [name, setName] = useState("");
@@ -24,21 +25,26 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={{ padding: 20 }}>
+    <div className="loginpage-container">
       <h2>Login</h2>
 
-      <form onSubmit={handleSubmit}>
-        <label>Name</label>
+      <form onSubmit={handleSubmit} className="form">
+        <label className="form-label">Name</label>
         <input 
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          className="form-input"
         />
 
         <br /><br />
 
-        <label>Role</label>
-          <select value={role} onChange={(e) => setRole(e.target.value)}>
+        <label className="form-label">Role</label>
+          <select 
+            value={role} 
+            onChange={(e) => setRole(e.target.value)}
+            className="form-input"
+          >
             <option value="">Select Role</option>
             <option value="FOH">FOH</option>
             <option value="BOH">BOH</option>
@@ -46,10 +52,14 @@ export default function LoginPage() {
 
         <br /><br />
 
-        {(role === "FOH" ) && (<label>Location</label>)}
+        {(role === "FOH" ) && (<label className="form-label">Location</label>)}
 
         {(role === "FOH" ) &&(              
-          <select value={location} onChange={(e) => setLocation(e.target.value)}>
+          <select 
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            className="form-input"
+          >
             <option value="">Select Location</option>
             <option value="Cash">Cash</option>
             <option value="Fits">Fits</option>
@@ -63,7 +73,7 @@ export default function LoginPage() {
         {(role === "FOH" ) &&(<br />)}
         {(role === "FOH" ) &&(<br />)}
           
-        <button type="submit">Login</button>
+        <button type="submit" className="login-btn">Login</button>
       </form>
     </div>
   );

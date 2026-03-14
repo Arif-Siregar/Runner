@@ -99,7 +99,9 @@ export default function ShowPageBOH() {
   async function handleDelete(p){
     const {error} = await supabase
       .from("posts")
-      .update({ in_view: false})
+      .update({ in_view: false, 
+                completed_at: new Date().toISOString(),
+      })
       .eq("id", p.id)
 
     if (error){
@@ -114,6 +116,7 @@ export default function ShowPageBOH() {
       .update({ in_progress: user.name,
                 created_at_boh: new Date().toISOString(),
                 created_at_foh: new Date().toISOString(),
+                in_progress_at: new Date().toISOString(),
        })
       .eq("id", p.id);
 
