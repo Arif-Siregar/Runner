@@ -20,6 +20,7 @@ export default function ShowPageBOH() {
         const { data, error } = await supabase
           .from("posts")
           .select("*")
+          .eq("in_view", true)
           .order("created_at_boh", { ascending: false });
           tempData = data
           tempError = error
@@ -27,6 +28,7 @@ export default function ShowPageBOH() {
         const { data, error } = await supabase
           .from("posts")
           .select("*")
+          .eq("in_view", true)
           .order("created_at_foh", { ascending: false });
           tempData = data
           tempError = error
@@ -72,9 +74,13 @@ export default function ShowPageBOH() {
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "posts" },
         (payload) => {
-          setPosts((prev) =>
-            sortByCreatedAt(prev.map((p) => (p.id === payload.new.id ? (updatePost(p, payload.new)) : p)), user.role)
-          );
+          if (payload.new.in_view === false){
+            setPosts((prev) => prev.filter((p) => p.id !== payload.old.id));
+          } else {
+            setPosts((prev) =>
+              sortByCreatedAt(prev.map((p) => (p.id === payload.new.id ? (updatePost(p, payload.new)) : p)), user.role)
+            );
+          }
         }
       )
       .on(
@@ -93,7 +99,7 @@ export default function ShowPageBOH() {
   async function handleDelete(p){
     const {error} = await supabase
       .from("posts")
-      .delete()
+      .update({ in_view: false})
       .eq("id", p.id)
 
     if (error){
