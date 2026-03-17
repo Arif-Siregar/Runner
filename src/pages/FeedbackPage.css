@@ -1,0 +1,57 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+.feedbackpage-container {
+  padding: 20px;
+  width: 90%;      
+  max-width: 600px;
+}
+
+.form-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.paragraph-input{
+  width: 100%;
+  height: 150px;
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  resize: vertical;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.submit-btn {
+  background-color: #2e3bcc; 
+  color: white;
+  border: none;
+  padding: 8px 40px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.submit-btn:hover {
+  background-color: #2758ae;
+}

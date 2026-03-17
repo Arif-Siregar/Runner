@@ -1,0 +1,42 @@
+-- how many orders per hour on each day
+
+SELECT
+  EXTRACT(HOUR FROM created_at AT TIME ZONE 'Australia/Melbourne') AS hour,
+  COUNT(*) AS posts
+FROM posts
+WHERE created_at AT TIME ZONE 'Australia/Melbourne' >= '2026-03-15'
+AND created_at AT TIME ZONE 'Australia/Melbourne' < '2026-03-16'
+GROUP BY hour
+ORDER BY hour;
+
+-- how many orders per day
+
+SELECT
+  DATE(created_at AT TIME ZONE 'Australia/Melbourne') AS date,
+  COUNT(*) AS posts
+FROM posts
+WHERE created_at AT TIME ZONE 'Australia/Melbourne' >= '2026-03-15'
+AND created_at AT TIME ZONE 'Australia/Melbourne' < '2026-03-16'
+GROUP BY date;
+
+-- Average and maximum of duration between creation and completion of order each day
+
+SELECT
+  AVG(EXTRACT(EPOCH FROM completed_at - created_at) / 60) AS avg_minutes,
+  MAX(EXTRACT(EPOCH FROM completed_at - created_at) / 60) AS max_minutes
+FROM posts
+WHERE completed_at IS NOT NULL
+AND completed_at - created_at BETWEEN INTERVAL '30 seconds' AND INTERVAL '30 minutes'
+AND created_at AT TIME ZONE 'Australia/Melbourne' >= '2026-03-15'
+AND created_at AT TIME ZONE 'Australia/Melbourne' < '2026-03-16';
+
+-- Average and maximum of duration between in_progress and completion of order each day
+
+SELECT
+  AVG(EXTRACT(EPOCH FROM in_progress_at - created_at) / 60) AS avg_minutes,
+  MAX(EXTRACT(EPOCH FROM in_progress_at - created_at) / 60) AS max_minutes
+FROM posts
+WHERE in_progress_at IS NOT NULL
+AND in_progress_at - created_at BETWEEN INTERVAL '30 seconds' AND INTERVAL '30 minutes'
+AND created_at AT TIME ZONE 'Australia/Melbourne' >= '2026-03-15'
+AND created_at AT TIME ZONE 'Australia/Melbourne' < '2026-03-16';

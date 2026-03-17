@@ -8,6 +8,7 @@ import sortByCreatedAt from "../components/sortByCreatedAt";
 
 export default function ShowPageBOH() {
   const [posts, setPosts] = useState([]);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const {user} = useAuth();
   const updateSound = new Audio("/sounds/ding.mp3");
   const gotItSound = new Audio("/sounds/check.mp3");
@@ -97,6 +98,7 @@ export default function ShowPageBOH() {
   }, []);
 
   async function handleDelete(p){
+    setDeleteLoading(true);
     const {error} = await supabase
       .from("posts")
       .update({ in_view: false, 
@@ -108,6 +110,7 @@ export default function ShowPageBOH() {
       console.error("Error deleting item:", error.message);
       alert("Error deleting item.")
     }
+    setDeleteLoading(false);
   }
 
   async function handleInProgress(p){
@@ -201,6 +204,7 @@ export default function ShowPageBOH() {
 
                 <button
                   className="delete-btn" 
+                  disabled={deleteLoading}
                   onClick={() => handleDelete(p)}
                 >
                   Completed
@@ -211,6 +215,11 @@ export default function ShowPageBOH() {
           ))}
         </div>
       )}
+      <footer class="site-footer">
+        <p>
+          Leave some feedback or suggestion <a href="/feedback">here</a>.
+        </p>
+      </footer>
     </div>
   );
 }

@@ -81,6 +81,15 @@
   cursor: pointer;
 }
 
+.delete-btn:hover {
+  background-color: #00721f;
+}
+
+.delete-btn:disabled {
+  background-color: #9bff9e;
+  cursor: not-allowed;
+}
+
 .repost-btn {
   padding: 6px 12px;
   background: #e02020;     
@@ -95,4 +104,11 @@
   width: 24px;
   height: 24px;
   filter: brightness(0) invert(1);  
+}
+
+.site-footer {
+  text-align: center;
+  padding: 1rem;
+  font-size: 1rem;
+  color: #6b7280;
 }

@@ -5,6 +5,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import LoginPage from "./pages/LoginPage";
 import AddPage from "./pages/AddPage";
 import ShowPageBOH from "./pages/ShowPageBOH";
+import FeedbackPage from "./pages/FeedbackPage";
 
 export default function AppRoutes() {
   const {user} = useAuth(); 
@@ -15,6 +16,16 @@ export default function AppRoutes() {
       {/* Public */}
       <Route path="/login" element={<LoginPage />} />
 
+      {/* Feedbacks */}
+      <Route 
+        path="/feedback" 
+        element={
+          <ProtectedRoute>
+            <FeedbackPage  />
+          </ProtectedRoute>
+        }
+      />
+      
       {/* Protected */}
       <Route
         path="/add"
