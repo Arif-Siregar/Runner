@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 import { Link } from "react-router-dom";
 import "./AddPage.css"
 import { useAuth } from "../AuthContext";
 import ShowPageBOH from "./ShowPageBOH";
 import compressImage from "../components/compressImage";
+import useUnsavedChanges from "../hooks/useUnsavedChanges";
 
 export default function AddPage() {
   const [title, setTitle] = useState("");
@@ -12,17 +13,71 @@ export default function AddPage() {
   const [color, setColor] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [file, setFile] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [addLoading, setAddLoading] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
+  const [queue, setQueue] = useState([]);
   const {user} = useAuth();
   const [location, setLocation] = useState(user.location);
+  const [showSubmitInfo, setShowSubmitInfo] = useState(false);
+  const [showAddInfo, setShowAddInfo] = useState(false);
+
+  useUnsavedChanges(queue.length > 0);
+
+  useEffect(() => {
+    const handleClick = () => {
+      setShowAddInfo(false);
+      setShowSubmitInfo(false);
+    };
+
+    if (showAddInfo || showSubmitInfo){
+      window.addEventListener("pointerdown", handleClick);
+    }
+
+    return () => window.removeEventListener("pointerdown", handleClick);
+  }, [showAddInfo, showSubmitInfo]);
 
   async function handleSubmit(e) {
+    e.preventDefault();
+    if (!queue) return alert("Please provide an item first by pressing Add Item before submitting.");
+    setSubmitLoading(true);
+    setAddLoading(true);
+
+    const {data: group} = await supabase
+      .from("groups")
+      .insert({
+        count:queue.length,
+        name:user.name,
+        location:location,
+      })
+      .select()
+      .single();
+    
+    setQueue(queue.map(post => post.group = group.id));
+
+    const { error: PostsDbError } = await supabase
+      .from("posts")
+      .insert(queue);
+
+    if (PostsDbError) {
+      setSubmitLoading(false);
+      setAddLoading(false);
+      return alert("Error saving post: " + PostsDbError.message);
+    }
+    
+    alert("All items have been submitted!");
+    setQueue([]);
+    setSubmitLoading(false);
+    setAddLoading(false);
+  }
+
+  async function handleAddItem(e) {
     e.preventDefault();
     if (!file && !title) return alert("Please provide at least an item's name or a WWMT tag.");
     if (user.role === "BOH") return alert("Please log in as FOH to add item");
     var imageUrl = null;
     var filePath = null;
-    setLoading(true);
+    setAddLoading(true);
+    setSubmitLoading(true);
 
     if (file){
       const compressedFile = await compressImage(file);
@@ -32,7 +87,8 @@ export default function AddPage() {
         .upload(filePath, compressedFile);
 
       if (uploadError) {
-        setLoading(false);
+        setAddLoading(false);
+        setSubmitLoading(false);
         return alert("Error uploading image: " + uploadError.message);
       }
 
@@ -41,10 +97,7 @@ export default function AddPage() {
         .getPublicUrl(filePath);
       imageUrl = data.publicUrl;
     }
-
-    const { error: dbError } = await supabase
-      .from("posts")
-      .insert([{ title:title,
+    setQueue([...queue, { title:title,
         size:size,
         color:color,
         quantity:quantity,
@@ -53,13 +106,7 @@ export default function AddPage() {
         image_url: imageUrl,
         image_path: filePath,
         repost:false,
-      }]);
-    
-
-    if (dbError) {
-      setLoading(false);
-      return alert("Error saving post: " + dbError.message);
-    }
+      } ]);
 
     // const notification_result = await supabase.functions.invoke("send-new-post-push", {
     //   body: {
@@ -70,13 +117,13 @@ export default function AddPage() {
 
     // console.log(notification_result);
 
-    alert("Item added!");
     setTitle("");
     setSize("");
     setColor("");
     setQuantity(1);
     setFile(null);
-    setLoading(false);
+    setAddLoading(false);
+    setSubmitLoading(false);
   }
 
   return (
@@ -161,13 +208,64 @@ export default function AddPage() {
             <p className="input-hint">Change location if you are not at {user.location}</p>
           </section>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="submit-btn"
-          >
-            {loading ? "Uploading..." : "Add Item"}
-          </button>
+          <div className="form-submission-actions">
+            <div className="btn-actions">
+              <button
+                type="button"
+                disabled={addLoading}
+                onClick={handleAddItem}
+                className="add-item-btn"
+              >
+                {addLoading ? "Uploading..." : "Add Item"}
+              </button>
+
+              <button
+                type="button"
+                className="info-btn" 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowAddInfo(!showAddInfo);
+                }}
+              >
+                ⓘ
+              </button>
+            </div>
+
+            <div className="btn-actions">
+              <button
+                type="submit"
+                disabled={submitLoading  || queue.length === 0}
+                className="submit-items-btn"
+              >
+                Submit {queue.length}
+              </button>
+
+              <button
+                type="button" 
+                className="info-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowSubmitInfo(!showSubmitInfo);
+                }}
+              >
+                ⓘ
+              </button>
+            </div>
+          </div>
+          
+          {showAddInfo &&   (
+            <div className="info-box">
+              Press this first to add one or more items into the queue.
+              Number of items added can be seen on the submit button.
+              Submit button have to be pressed to send all items to BOH.
+            </div>
+          )}
+
+          {showSubmitInfo &&   (
+            <div className="info-box">
+              Press this to send all items added to BOH.
+            </div>
+          )}
         </form>
       </div>
 
