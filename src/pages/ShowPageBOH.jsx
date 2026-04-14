@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "../supabaseClient";
 import Firebase from "../components/Firebase";
 import "./ShowPageBOH.css"
@@ -10,10 +10,24 @@ export default function ShowPageBOH() {
   const [posts, setPosts] = useState([]);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const {user} = useAuth();
-  const updateSound = new Audio("/sounds/ding.mp3");
-  const gotItSound = new Audio("/sounds/check.mp3");
+  
+  const gotItSoundRef = useRef(new Audio("https://qbbbsznsxhfllwhborju.supabase.co/storage/v1/object/public/ringtone/check.mp3"));
+  const updateSoundRef = useRef(new Audio("https://qbbbsznsxhfllwhborju.supabase.co/storage/v1/object/public/ringtone/ding.mp3"));
+
+  const playUpdateSound = () => {
+    updateSoundRef.current.currentTime = 0;
+    updateSoundRef.current.play().catch(() => {console.warn("User hasn't interacted yet. Sound blocked.");});
+  };
+
+  const playGotItSound = () => {
+    gotItSoundRef.current.currentTime = 0;
+    gotItSoundRef.current.play().catch(() => {console.warn("User hasn't interacted yet. Sound blocked.");});
+  };
 
   useEffect(() => {
+    updateSoundRef.current.load();
+    gotItSoundRef.current.load();
+
     async function fetchPosts() {
       let tempData = null;
       let tempError = null;
@@ -23,16 +37,16 @@ export default function ShowPageBOH() {
           .select("*")
           .eq("in_view", true)
           .order("created_at_boh", { ascending: false });
-          tempData = data
-          tempError = error
+        tempData = data
+        tempError = error
       } else {
         const { data, error } = await supabase
           .from("posts")
           .select("*")
           .eq("in_view", true)
           .order("created_at_foh", { ascending: false });
-          tempData = data
-          tempError = error
+        tempData = data
+        tempError = error
       }
 
       if (tempError) console.error(tempError);
@@ -43,17 +57,17 @@ export default function ShowPageBOH() {
 
     function updatePost(old_p, new_p){
       if ((new_p.in_progress !== old_p.in_progress) && (new_p.in_progress !== user.name)){
-        gotItSound.play().catch(() => {console.warn("User hasn't interacted yet. Sound blocked.");});
+        playGotItSound();
       } 
 
       if (user.role === "BOH"){
         if (new_p.repost !== old_p.repost){
-          updateSound.play().catch(() => {console.warn("User hasn't interacted yet. Sound blocked.");});
+          playUpdateSound();
         }
       }
       if (user.role === "FOH") {
         if (new_p.comment !== old_p.comment){
-          updateSound.play().catch(() => {console.warn("User hasn't interacted yet. Sound blocked.");});
+          playUpdateSound();
         }
       }
       return new_p
@@ -66,9 +80,6 @@ export default function ShowPageBOH() {
         {event:'INSERT', schema:'public', table:'posts'},
         (payload) => {
           setPosts((prev) => sortByCreatedAt([payload.new, ...prev], user.role));
-          if (user.role === "BOH"){
-            updateSound.play().catch(() => {console.warn("User hasn't interacted yet. Sound blocked.");});
-          }
         }
       )
       .on(
@@ -90,6 +101,15 @@ export default function ShowPageBOH() {
         (payload) => {
           setPosts((prev) => prev.filter((p) => p.id !== payload.old.id));
         }
+      )
+      .on(
+        "postgres_changes",
+        {event:'INSERT', schema:'public', table:'posts'},
+        () => {
+          if (user.role === "BOH"){
+            playUpdateSound();
+          }
+        }
       ).subscribe();
     
     return () => {
@@ -99,17 +119,28 @@ export default function ShowPageBOH() {
 
   async function handleDelete(p){
     setDeleteLoading(true);
-    const {error} = await supabase
+    const {postsUpdateError} = await supabase
       .from("posts")
       .update({ in_view: false, 
                 completed_at: new Date().toISOString(),
       })
       .eq("id", p.id)
 
-    if (error){
-      console.error("Error deleting item:", error.message);
+    if (postsUpdateError){
+      console.error("Error deleting item:", postsUpdateError.message);
       alert("Error deleting item.")
     }
+
+    const {groupsUpdateError} = await supabase
+      .from("groups")
+      .update({ completed_at: new Date().toISOString(), })
+      .eq("id", p.group)
+
+    if (groupsUpdateError){
+      console.error("Error deleting item:", groupsUpdateError.message);
+      alert("Error deleting item.")
+    }
+    
     setDeleteLoading(false);
   }
 
@@ -174,9 +205,9 @@ export default function ShowPageBOH() {
               )}
               <p className="post-title">{p.title}</p>
 
-              {p.size ? <p>Size: {p.size}</p> : <p>Size: same</p>}
-              {p.color ? <p>Color: {p.color}</p> : <p>Color: same</p>}
-              <p>Quantity: {p.quantity}</p>
+              {p.size ? <p style={{background:`${user.role==="BOH" ? "green" : ""}`}}>Size: {p.size}</p> : <p>Size: same</p>}
+              {p.color ? <p style={{background:`${user.role==="BOH" ? "green" : ""}`}}>Color: {p.color}</p> : <p>Color: same</p>}
+              <p style={{background:`${(user.role==="BOH" && p.quantity !== 1) ? "green" : ""}`}}>Quantity: {p.quantity}</p>
               <p>Location: {p.location}</p>
               <p>Edu: {p.name}</p>
               
@@ -215,7 +246,7 @@ export default function ShowPageBOH() {
           ))}
         </div>
       )}
-      <footer class="site-footer">
+      <footer className="site-footer">
         <p>
           Leave some feedback or suggestion <a href="/feedback">here</a>.
         </p>
