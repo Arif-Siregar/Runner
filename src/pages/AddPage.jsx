@@ -197,13 +197,14 @@ export default function AddPage() {
               onChange={(e) => setLocation(e.target.value)}
               className="form-input"
             >
-              <option value="Cash">Cash</option>
-              <option value="Fits">Fits</option>
-              <option value="M Pant">M Pant</option>
-              <option value="W Pant">W Pant</option>
-              <option value="Zone 1">Z1</option>
-              <option value="Zone 2">Z2</option>
-              <option value="Zone 3">Z3</option>
+            <option value="Cash">Cash</option>
+            <option value="Fits">Fits</option>
+            <option value="Men's">Men's</option>
+            <option value="W Pant">W Pant</option>
+            <option value="Zone 1">Z1</option>
+            <option value="Zone 2">Z2</option>
+            <option value="Zone 3">Z3</option>
+            <option value="Zone 4">Z4</option>
             </select>
             <p className="input-hint">Change location if you are not at {user.location}</p>
           </section>
