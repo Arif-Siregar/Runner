@@ -8,6 +8,7 @@ import sortByCreatedAt from "../components/sortByCreatedAt";
 
 export default function ShowPageBOH() {
   const [posts, setPosts] = useState([]);
+  const [showCompletedInfo, setShowCompletedInfo] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const {user} = useAuth();
   
@@ -117,28 +118,68 @@ export default function ShowPageBOH() {
     };
   }, []);
 
-  async function handleDelete(p){
-    setDeleteLoading(true);
-    const {postsUpdateError} = await supabase
-      .from("posts")
-      .update({ in_view: false, 
-                completed_at: new Date().toISOString(),
-      })
-      .eq("id", p.id)
+  useEffect(() => {
+    const handleClick = () => {
+      setShowCompletedInfo(false);
+    };
 
-    if (postsUpdateError){
-      console.error("Error deleting item:", postsUpdateError.message);
-      alert("Error deleting item.")
+    if (showCompletedInfo){
+      window.addEventListener("pointerdown", handleClick);
     }
 
-    const {groupsUpdateError} = await supabase
-      .from("groups")
-      .update({ completed_at: new Date().toISOString(), })
-      .eq("id", p.group)
+    return () => window.removeEventListener("pointerdown", handleClick);
+  }, [showCompletedInfo]);
 
-    if (groupsUpdateError){
-      console.error("Error deleting item:", groupsUpdateError.message);
-      alert("Error deleting item.")
+  async function handleDelete(p){
+    setDeleteLoading(true);
+    const { data, error } = await supabase
+      .from("posts")
+      .select("in_view")
+      .eq("id", p.id)
+
+    if (error){
+      console.error(error)
+      setDeleteLoading(false)
+      return alert("Item does not exist")
+    };
+
+    if (data[0].in_view){
+
+      let tempUpdate = {};
+      if (user.role === "BOH"){
+        tempUpdate = { 
+          in_view: false, 
+          completed_at: new Date().toISOString(),
+          is_completed: true,
+        }
+      } else {
+        tempUpdate = { 
+          in_view: false, 
+          completed_at: new Date().toISOString(),
+        }
+      }
+
+      const {postsUpdateError} = await supabase
+        .from("posts")
+        .update(tempUpdate)
+        .eq("id", p.id)
+
+      if (postsUpdateError){
+        console.error("Error deleting item:", postsUpdateError.message);
+        setDeleteLoading(false)
+        return alert("Error deleting item.")
+      }
+
+      const {groupsUpdateError} = await supabase
+        .from("groups")
+        .update({ completed_at: new Date().toISOString(), })
+        .eq("id", p.group)
+
+      if (groupsUpdateError){
+        console.error("Error deleting item:", groupsUpdateError.message);
+        setDeleteLoading(false)
+        return alert("Error deleting item.")
+      }
     }
     
     setDeleteLoading(false);
@@ -233,17 +274,38 @@ export default function ShowPageBOH() {
                   {p.in_progress ? "In Progress" : "Got it!"}
                 </button>)}
 
-                <button
-                  className="delete-btn" 
-                  disabled={deleteLoading}
-                  onClick={() => handleDelete(p)}
-                >
-                  Completed
-                </button>
+                <div className="btn-actions">
+                  <button
+                    className="delete-btn" 
+                    disabled={deleteLoading}
+                    onClick={() => handleDelete(p)}
+                  >
+                    {user.role === "BOH"? "Completed" : "Cancel request"}
+                  </button>
 
+                  <button
+                    type="button"
+                    className="info-btn" 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowCompletedInfo(!showCompletedInfo);
+                    }}
+                  >
+                    ⓘ
+                  </button>
+                </div>
               </div>
             </div>
           ))}
+
+          {showCompletedInfo &&   (
+            <div className="info-box">
+              {user.role === "BOH" && "Remember to press this button after the request is completed."}
+              {user.role === "FOH" && "Press this button only when cancelling request," + 
+              " ie. wrong order is submitted or item is not available in BOH." +
+              " Order completion only need to be confirmed by BOH."}
+            </div>
+          )}
         </div>
       )}
       <footer className="site-footer">
