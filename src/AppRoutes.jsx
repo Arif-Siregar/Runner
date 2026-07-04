@@ -7,6 +7,8 @@ import AddPage from "./pages/AddPage";
 import ShowPageBOH from "./pages/ShowPageBOH";
 import FeedbackPage from "./pages/FeedbackPage";
 import StatisticsPage from "./pages/StatisticsPage";
+import StatisticsLoginPage from "./pages/StatisticsLoginPage";
+
 
 export default function AppRoutes() {
   const {user} = useAuth(); 
@@ -49,6 +51,11 @@ export default function AppRoutes() {
       <Route
         path="/statistics"
         element={<StatisticsPage />}
+      />
+
+      <Route
+        path="/statisticsLogin"
+        element={<StatisticsLoginPage />}
       />
 
       {/* DEFAULT REDIRECT */}

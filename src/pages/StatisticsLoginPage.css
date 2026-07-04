@@ -1,20 +1,19 @@
-.statisticspage-container {
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+.loginpage-container {
   padding: 20px;
   width: 90%;      
-
+  max-width: 600px;
 }
 
 .form-label {
   display: block;
   font-weight: 600;
   margin-bottom: 4px;
-}
-
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
 }
 
 .form-input {
@@ -32,7 +31,7 @@
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
 }
 
-.submit-btn {
+.login-btn {
   background-color: #2e3bcc; 
   color: white;
   border: none;
@@ -42,20 +41,6 @@
   transition: 0.2s;
 }
 
-.submit-btn:hover {
+.login-btn:hover {
   background-color: #2758ae;
-}
-
-.logout-btn {
-  float: right;
-  background: #ff4d4d;
-  border: none;
-  padding: 8px 20px;
-  color: white;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.logout-btn:hover {
-  background: #e63939;
 }

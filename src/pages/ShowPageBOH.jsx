@@ -232,7 +232,7 @@ export default function ShowPageBOH() {
           {posts.map((p) => (
             <div
               key={p.id}
-              className={`post-card ${(p.repost && user.role==="BOH")? "repost" : ""}`}
+              className={`post-card ${p.repost? "repost" : ""} ${p.markdown? "markdown" : ""}`}
             >
               {p.in_progress ? <p>{p.in_progress} is working on it...</p>: null}
               {p.image_url ? (
