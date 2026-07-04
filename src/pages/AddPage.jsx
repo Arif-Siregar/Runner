@@ -20,6 +20,9 @@ export default function AddPage() {
   const [location, setLocation] = useState(user.location);
   const [showSubmitInfo, setShowSubmitInfo] = useState(false);
   const [showAddInfo, setShowAddInfo] = useState(false);
+  const [cashHangerLoading, setCashHangerLoading] = useState(false);
+  const [fitsHangerLoading, setFitsHangerLoading] = useState(false);
+  const [markdown, setMarkdown] = useState(false);
 
   useUnsavedChanges(queue.length > 0);
 
@@ -68,6 +71,7 @@ export default function AddPage() {
     setQueue([]);
     setSubmitLoading(false);
     setAddLoading(false);
+    setMarkdown(false);
   }
 
   async function handleAddItem(e) {
@@ -105,7 +109,7 @@ export default function AddPage() {
         name:user.name,
         image_url: imageUrl,
         image_path: filePath,
-        repost:false,
+        markdown: markdown,
       } ]);
 
     // const notification_result = await supabase.functions.invoke("send-new-post-push", {
@@ -126,13 +130,77 @@ export default function AddPage() {
     setSubmitLoading(false);
   }
 
+  async function handleGetHanger(e, loc){
+    e.preventDefault();
+    if (loc === "Cash") {setCashHangerLoading(true)};
+    if (loc === "Fits") {setFitsHangerLoading(true)};
+
+    const { error: PostsDbError } = await supabase
+      .from("posts")
+      .insert({ title:`Get hanger from ${loc}`,
+        location:location,
+        name:user.name,
+        quantity:1,
+      });
+
+    if (PostsDbError) {
+      if (loc === "Cash") {setCashHangerLoading(false)};
+      if (loc === "Fits") {setFitsHangerLoading(false)};
+      return alert("Error saving post: " + PostsDbError.message);
+    }
+
+    if (loc === "Cash") {setCashHangerLoading(false)};
+    if (loc === "Fits") {setFitsHangerLoading(false)};
+    alert("Request has been submitted!");
+  }
+
   return (
     <div style={{ padding: 20 }}>
       <div>
+        <div className="quick-actions-container">
+          <h2> Quick Actions </h2>
+          <div className="quick-actions">
+            <button
+              type="button"
+                disabled={cashHangerLoading}
+                onClick={(e) => handleGetHanger(e, "Cash")}
+              className="add-item-btn"
+            >
+              {cashHangerLoading ? "Uploading..." : "Get Hanger from Cash"}
+            </button>
+
+            <button
+              type="button"
+              disabled={fitsHangerLoading}
+              onClick={(e) => handleGetHanger(e, "Fits")}
+              className="add-item-btn"
+            >
+              {fitsHangerLoading ? "Uploading..." : "Get Hanger from Fits"}
+            </button>
+          </div>
+        </div>
+
         <form onSubmit={handleSubmit} className="form">
           {/* Section 1: Image or Item Name */}
           <section className="form-section">
             <h3 className="section-title">1️⃣ WWMT Tag or Item Name</h3>
+
+            {/* <p className="section-hint">
+              <strong>Temporary markdown feature</strong>
+            </p>
+            <input
+              type="radio"
+              name="markdown"
+              checked={!markdown}
+              onChange={() => setMarkdown(false)}
+            /> Normal
+
+            <input
+              type="radio"
+              name="markdown"
+              checked={markdown}
+              onChange={() => setMarkdown(true)}
+            /> Markdown */}
             <p className="section-hint">
               <strong>Take a picture of WWMT tag</strong> or <strong>search for item's name</strong>.
             </p>
@@ -156,6 +224,7 @@ export default function AddPage() {
               onChange={(e) => setTitle(e.target.value)}
               className="form-input"
             />
+
           </section>
 
           {/* Section 2: Details */}

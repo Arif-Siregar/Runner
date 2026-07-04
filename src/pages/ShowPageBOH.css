@@ -23,6 +23,20 @@
   background: red
 }
 
+.post-card.markdown {
+  background: purple
+}
+
+.post-card.markdown.repost {
+  background: linear-gradient(
+    to bottom right,
+    purple 0%,
+    purple 50%,
+    red 50%,
+    red 100%
+  );
+}
+
 /* Bigger, fixed-size image */
 .post-image {
   width: 100%;
