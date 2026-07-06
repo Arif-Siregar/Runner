@@ -20,6 +20,7 @@ export default function StatisticsPage(){
   const [durationHistogram, setDurationHistogram] = useState(null);
   const [postsPerHourPerDayName, setPostsPerHourPerDayName] = useState(null);
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     async function checkUser(){
@@ -27,6 +28,8 @@ export default function StatisticsPage(){
 
       if(!data.user){
         navigate("/statisticsLogin")
+      } else {
+        setUser(data);
       }
     }
     checkUser();
@@ -127,6 +130,13 @@ export default function StatisticsPage(){
         return alert("Please provide a date.")
         setLoading(false);
       }
+
+      if (user.user?.email === "admin@admin.com"){
+        const {error: countError} = await supabase
+          .from("statistics_frequency")
+          .insert({start_date: startDate});
+      }
+
       const {data: postsPerDayData, error: postsPerDayError} = await supabase
         .rpc("get_posts_per_day", {
           start_date: startDate,
@@ -153,6 +163,15 @@ export default function StatisticsPage(){
       if (!startDate || !endDate){
         setLoading(false);
         return alert("Please provide both a start date and an end date.")
+      }
+
+      if (user.user?.email === "admin@admin.com"){
+        const {error: countError} = await supabase
+          .from("statistics_frequency")
+          .insert({
+            start_date: startDate,
+            end_date:endDate,
+          });
       }
 
       const {data: postsPerDayData, error: postsPerDayError} = await supabase
