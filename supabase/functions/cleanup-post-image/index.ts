@@ -1,21 +1,44 @@
-import { serve } from "https://deno.land/std/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-serve(async (req) => {
-  const { image_path } = await req.json();
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
 
-  if (!image_path) {
-    return new Response("No image path", { status: 200 });
+const json = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
   }
 
-  const supabase = createClient(
-    Deno.env.get("SUPABASE_URL")!,
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-  );
+  try{
+    const { image_path } = await req.json();
 
-  await supabase.storage
-    .from("uploads")
-    .remove([image_path]);
+    if (!image_path) {
+      return json({error: "No image path"}, 400);
+    }
 
-  return new Response("OK");
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+
+    const {error} = await supabase.storage
+      .from("uploads")
+      .remove([image_path]);
+
+    if (error) throw error;
+
+    return json({ success: true });
+
+  }catch (err){
+    return json({ error: (err as Error).message }, 500);
+  }
 });
