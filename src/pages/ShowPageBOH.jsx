@@ -134,7 +134,7 @@ export default function ShowPageBOH() {
     setDeleteLoading(true);
     const { data, error } = await supabase
       .from("posts")
-      .select("in_view")
+      .select("in_view, image_path")
       .eq("id", p.id)
 
     if (error){
@@ -159,7 +159,7 @@ export default function ShowPageBOH() {
         }
       }
 
-      const {postsUpdateError} = await supabase
+      const {error: postsUpdateError} = await supabase
         .from("posts")
         .update(tempUpdate)
         .eq("id", p.id)
@@ -170,7 +170,7 @@ export default function ShowPageBOH() {
         return alert("Error deleting item.")
       }
 
-      const {groupsUpdateError} = await supabase
+      const {error: groupsUpdateError} = await supabase
         .from("groups")
         .update({ completed_at: new Date().toISOString(), })
         .eq("id", p.group)
@@ -179,6 +179,17 @@ export default function ShowPageBOH() {
         console.error("Error deleting item:", groupsUpdateError.message);
         setDeleteLoading(false)
         return alert("Error deleting item.")
+      }
+
+      if (data[0].image_path){
+        const { error: imageDeleteError } = await supabase.functions.invoke('cleanup-post-image', {
+          body: { image_path: data[0].image_path },
+        })
+        if (imageDeleteError) {
+          console.error('Failed to delete image:', imageDeleteError);
+          setDeleteLoading(false)
+          return alert("Error deleting item.")
+        }
       }
     }
     
