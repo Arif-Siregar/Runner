@@ -170,15 +170,17 @@ export default function ShowPageBOH() {
         return alert("Error deleting item.")
       }
 
-      const {error: groupsUpdateError} = await supabase
-        .from("groups")
-        .update({ completed_at: new Date().toISOString(), })
-        .eq("id", p.group)
+      if (p.group){
+        const {error: groupsUpdateError} = await supabase
+          .from("groups")
+          .update({ completed_at: new Date().toISOString(), })
+          .eq("id", p.group)
 
-      if (groupsUpdateError){
-        console.error("Error deleting item:", groupsUpdateError.message);
-        setDeleteLoading(false)
-        return alert("Error deleting item.")
+        if (groupsUpdateError){
+          console.error("Error deleting item:", groupsUpdateError.message);
+          setDeleteLoading(false)
+          return alert("Error deleting item.")
+        }
       }
 
       if (data[0].image_path){
@@ -200,7 +202,6 @@ export default function ShowPageBOH() {
     const { error } = await supabase
       .from("posts")
       .update({ in_progress: user.name,
-                created_at_boh: new Date().toISOString(),
                 created_at_foh: new Date().toISOString(),
                 in_progress_at: new Date().toISOString(),
        })
