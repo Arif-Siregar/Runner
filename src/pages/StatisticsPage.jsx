@@ -127,8 +127,8 @@ export default function StatisticsPage(){
 
     if (singleDate){
       if (!startDate){
-        return alert("Please provide a date.")
         setLoading(false);
+        return alert("Please provide a date.")
       }
 
       if (user.user?.email === "admin@admin.com"){
