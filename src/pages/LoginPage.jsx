@@ -15,12 +15,16 @@ export default function LoginPage() {
 
     if (!name || !role) return alert("Please enter your name and role.");
 
+    if (role === "FOH" && !location){
+      return alert("Please enter your location.")
+    }
+
     login(name, role, location);
 
     if (role === "FOH"){
       navigate("/add");
     } else {
-      navigate("/show")
+      navigate("/showBOH")
     };
   }
 

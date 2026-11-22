@@ -14,9 +14,6 @@ export function AuthProvider({ children }) {
   }, []);
 
   function login(name, role, location) {
-    if (role === "FOH" && !location){
-      return alert("Please enter your location.")
-    }
     const userData = { name, role, location };
     setUser(userData);
     localStorage.setItem("user", JSON.stringify(userData));

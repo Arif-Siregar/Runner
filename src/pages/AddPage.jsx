@@ -185,7 +185,7 @@ export default function AddPage() {
           <section className="form-section">
             <h3 className="section-title">1️⃣ WWMT Tag or Item Name</h3>
 
-            {/* <p className="section-hint">
+            <p className="section-hint">
               <strong>Temporary markdown feature</strong>
             </p>
             <input
@@ -200,7 +200,7 @@ export default function AddPage() {
               name="markdown"
               checked={markdown}
               onChange={() => setMarkdown(true)}
-            /> Markdown */}
+            /> Markdown
             <p className="section-hint">
               <strong>Take a picture of WWMT tag</strong> or <strong>search for item's name</strong>.
             </p>
@@ -253,7 +253,8 @@ export default function AddPage() {
 
             <label className="form-label">Quantity</label>
             <input
-              type="text"
+              type="number"
+              min={1}
               placeholder="e.g. 3"
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
