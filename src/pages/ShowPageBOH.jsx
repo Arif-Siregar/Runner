@@ -199,20 +199,22 @@ export default function ShowPageBOH() {
   }
 
   async function handleInProgress(p){
-    const { error } = await supabase
-      .from("posts")
-      .update({ in_progress: user.name,
-                created_at_foh: new Date().toISOString(),
-                in_progress_at: new Date().toISOString(),
-       })
-      .eq("id", p.id);
+    if (!p.in_progress){
+      const { error } = await supabase
+        .from("posts")
+        .update({ in_progress: user.name,
+                  created_at_foh: new Date().toISOString(),
+                  in_progress_at: new Date().toISOString(),
+        })
+        .eq("id", p.id);
 
-    if (error){
-      console.error("Error updating item:", error.message);
-      alert("Error updating item.")
-    }else{
-      alert("You got this!");
-    }
+      if (error){
+        console.error("Error updating item:", error.message);
+        alert("Error updating item.")
+      }else{
+        alert("You got this!");
+      }
+   }
   }
 
   async function handleRepost(p){
